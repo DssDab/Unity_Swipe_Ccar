@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class CarController : MonoBehaviour
 {
-    public float Speed = 0.0f;
+    float Speed = 0.0f;
     // Start is called before the first frame update
     Vector2 StartPos;
     
@@ -23,36 +23,54 @@ public class CarController : MonoBehaviour
         //{
         //    this.Speed = 0.2f;
         //}
-
-        // 스와이프 길이를 구한다.
-        if (Input.GetMouseButtonDown(0)&&GameDirector.m_State ==GameState.gameReady)
+        if (GameDirector.m_State == GameState.gameReady)
         {
-            // 마우스 단추를 클릭한 좌표
-            this.StartPos = Input.mousePosition;
-           
-        }
-        else if(Input.GetMouseButtonUp(0) && GameDirector.m_State == GameState.gameReady)
-        {
-            Vector2 EndPos = Input.mousePosition; ;
-            float SwipeLength = EndPos.x - this.StartPos.x;
-            // 스와이프 길이를 처음 속도로 변경한다.
 
-            if(SwipeLength <= 0)  // 만약 SwipeLength값이 0보다 작다면 플레이어가 뒤로 마우스를 보냈다는 뜻
+            // 스와이프 길이를 구한다.
+            if (Input.GetMouseButtonDown(0))
             {
-                SwipeLength = 0f;
+                // 마우스 단추를 클릭한 좌표
+                this.StartPos = Input.mousePosition;
+
             }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                Vector2 EndPos = Input.mousePosition; ;
+                float SwipeLength = EndPos.x - this.StartPos.x;
+                // 스와이프 길이를 처음 속도로 변경한다.
 
-            Speed = SwipeLength / 500.0f;
-            GetComponent<AudioSource>().Play();
-            GameDirector.m_State = GameState.gameIng;
+                Speed = SwipeLength / 500.0f;
+                GetComponent<AudioSource>().Play();
+                GameDirector.m_State = GameState.gameIng;
+            }
         }
-        if(!(Speed <= 0))
+        else if (GameDirector.m_State == GameState.gameIng)
         {
-        transform.Translate(Speed, 0, 0);
-        this.Speed *= 0.98f;
-        }
+            if (!(Speed <= 0))
+            {
+                transform.Translate(Speed, 0, 0);
+                this.Speed *= 0.98f;
+            }
+            if(this.Speed <=0.005f)
+            {
+                this.Speed = 0.0f;
+                GameDirector.m_State = GameState.gameReady;
 
-            
-       
+                //GameDirector a_GDirector = null;
+                //GameObject a_GObj = GameObject.Find("GameMgr");
+                //if(a_GObj != null) 
+                //    a_GDirector = a_GObj.GetComponent<GameDirector>();
+                //if (a_GDirector != null)
+                //    a_GDirector.RecordLength();
+                GameDirector a_GDirector = GameObject.FindObjectOfType<GameDirector>();     // GameDirector타입의 오브젝트를 Hieracchy에서 위에서 아래로 찾아보면서 제일 처음 만나 오브젝트를 가져온다?
+                if (a_GDirector != null)
+                    a_GDirector.RecordLength();
+
+                this.transform.position = new Vector3(-7.0f, -3.6f, 0);
+            }
+           
+
+        }
+ 
     }
 }
